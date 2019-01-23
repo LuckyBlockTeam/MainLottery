@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors and IDE
+.idea
+.vscode
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Project
+build/
+
+# Coverage
+coverage/
+coverage.json
+coverageEnv/
+
+# Linters
+.soliumignore
+.soliumrc.json
+
+# ABI
+ABI/
