@@ -19,8 +19,11 @@ contract JackPotChecker is usingOraclize, Ownable {
 
     string public url = "json(https://api.etherscan.io/api?module=stats&action=ethprice&apikey=91DFNHV3CJDJE12PG4DD66FUZEK71TC6NW).result.ethusd";
 
-    //    uint public startValue = 10**9*100; //  $ 1 000 000 000 in cents
-    uint public startValue = 40000; //400 USD in cents, ~2 ether, 2 ether for test
+    //    uint public superJackPotStartValue = 10**9*100; //  $ 1 000 000 000 in cents
+    //    uint public jackPotStartValue = 10**6*100; //  $ 1 000 000 in cents
+
+    uint public superJackPotStartValue = 40000; //400 USD in cents, ~2 ether, 2 ether for test
+    uint public jackPotStartValue = 20000; //200 USD in cents, ~1 ether, 1 ether for test
     uint public ETHInUSD;
     uint public CUSTOM_GASLIMIT = 350000;
     uint public timeout = 60; //86400; //1 day in sec
@@ -29,6 +32,7 @@ contract JackPotChecker is usingOraclize, Ownable {
     uint public minTimeUpdate = 600; // 10 min in sec
 
     iJackPot public superJackPot;
+    iJackPot public jackPot;
 
     event NewOraclizeQuery(string description);
     event NewPrice(uint price);
@@ -48,6 +52,7 @@ contract JackPotChecker is usingOraclize, Ownable {
         require(now > lastCallbackTimestamp + minTimeUpdate);
         ETHInUSD = parseInt(_result, 2);
         emit NewPrice(ETHInUSD);
+        processJackPot();
         processSuperJackPot();
 
         lastCallbackTimestamp = now;
@@ -70,18 +75,29 @@ contract JackPotChecker is usingOraclize, Ownable {
         }
     }
 
+    function processJackPot() public {
+        uint currentRound = jackPot.getCurrentRound();
+        uint roundFunds = jackPot.getRoundFunds(currentRound);
+
+        if (ETHInUSD.mul(roundFunds).div(10**18) >= jackPotStartValue) {
+            jackPot.processLottery();
+        }
+    }
+
     function processSuperJackPot() public {
         uint currentRound = superJackPot.getCurrentRound();
         uint roundFunds = superJackPot.getRoundFunds(currentRound);
 
-        if (ETHInUSD.mul(roundFunds).div(10**18) >= startValue) {
+        if (ETHInUSD.mul(roundFunds).div(10**18) >= superJackPotStartValue) {
             superJackPot.processLottery();
         }
     }
 
-    function setSuperJackPot(address _superJackPot) public onlyOwner {
+    function setContracts(address _jackPot, address _superJackPot) public onlyOwner {
+        require(_jackPot != address(0), "");
         require(_superJackPot != address(0), "");
 
+        jackPot = iJackPot(_jackPot);
         superJackPot = iJackPot(_superJackPot);
     }
 

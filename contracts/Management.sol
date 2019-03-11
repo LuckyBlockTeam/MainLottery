@@ -15,11 +15,12 @@ contract Management is Ownable {
     using SafeMath for uint;
 
     uint constant public BET_PRICE = 10000000000000000;  //0.01 eth in wei
-    uint constant public HOURLY_LOTTERY_SHARE = 40;  //0.01 eth in wei
+    uint constant public HOURLY_LOTTERY_SHARE = 30;  //30% to hourly lottery
     uint constant public DAILY_LOTTERY_SHARE = 10;                        //10% to daily lottery
     uint constant public WEEKLY_LOTTERY_SHARE = 5;                        //5% to weekly lottery
     uint constant public MONTHLY_LOTTERY_SHARE = 5;                       //5% to monthly lottery
     uint constant public YEARLY_LOTTERY_SHARE = 5;                        //5% to yearly lottery
+    uint constant public JACKPOT_LOTTERY_SHARE = 10;                 //10% to jackpot lottery
     uint constant public SUPER_JACKPOT_LOTTERY_SHARE = 15;                 //15% to superJackpot lottery
     uint constant public SHARE_DENOMINATOR = 100;                        //denominator for share
     uint constant public ORACLIZE_TIMEOUT = 86400;
@@ -29,6 +30,7 @@ contract Management is Ownable {
     iBaseLottery public weeklyLottery;
     iBaseLottery public monthlyLottery;
     iBaseLottery public yearlyLottery;
+    iBaseLottery public jackPot;
     iBaseLottery public superJackPot;
 
     //uint public start = 1546300800; // 01.01.2019 00:00:00
@@ -40,6 +42,7 @@ contract Management is Ownable {
         address _weeklyLottery,
         address _monthlyLottery,
         address _yearlyLottery,
+        address _jackPot,
         address _superJackPot
     )
         public
@@ -49,6 +52,7 @@ contract Management is Ownable {
         require(_weeklyLottery != address(0), "");
         require(_monthlyLottery != address(0), "");
         require(_yearlyLottery != address(0), "");
+        require(_jackPot != address(0), "");
         require(_superJackPot != address(0), "");
 
         mainLottery = iBaseLottery(_mainLottery);
@@ -56,6 +60,7 @@ contract Management is Ownable {
         weeklyLottery = iBaseLottery(_weeklyLottery);
         monthlyLottery = iBaseLottery(_monthlyLottery);
         yearlyLottery = iBaseLottery(_yearlyLottery);
+        jackPot = iBaseLottery(_jackPot);
         superJackPot = iBaseLottery(_superJackPot);
     }
 
@@ -66,15 +71,15 @@ contract Management is Ownable {
         weeklyLottery.setTicketPrice(BET_PRICE.mul(WEEKLY_LOTTERY_SHARE).div(SHARE_DENOMINATOR));
         monthlyLottery.setTicketPrice(BET_PRICE.mul(MONTHLY_LOTTERY_SHARE).div(SHARE_DENOMINATOR));
         yearlyLottery.setTicketPrice(BET_PRICE.mul(YEARLY_LOTTERY_SHARE).div(SHARE_DENOMINATOR));
-        superJackPot.setTicketPrice(
-            BET_PRICE.mul(SUPER_JACKPOT_LOTTERY_SHARE).div(SHARE_DENOMINATOR)
-        );
+        jackPot.setTicketPrice(BET_PRICE.mul(JACKPOT_LOTTERY_SHARE).div(SHARE_DENOMINATOR));
+        superJackPot.setTicketPrice(BET_PRICE.mul(SUPER_JACKPOT_LOTTERY_SHARE).div(SHARE_DENOMINATOR));
 
-        mainLottery.startLottery.value(msg.value/6)(start.add(mainLottery.getPeriod()).sub(now));
-        dailyLottery.startLottery.value(msg.value/6)(start.add(dailyLottery.getPeriod()).sub(now));
-        weeklyLottery.startLottery.value(msg.value/6)(start.add(weeklyLottery.getPeriod()).sub(now));
-        monthlyLottery.startLottery.value(msg.value/6)(start.add(monthlyLottery.getPeriod()).sub(now));
-        yearlyLottery.startLottery.value(msg.value/6)(start.add(yearlyLottery.getPeriod()).sub(now));
-        superJackPot.startLottery.value(msg.value/6)(ORACLIZE_TIMEOUT);
+        mainLottery.startLottery.value(msg.value/7)(start.add(mainLottery.getPeriod()).sub(now));
+        dailyLottery.startLottery.value(msg.value/7)(start.add(dailyLottery.getPeriod()).sub(now));
+        weeklyLottery.startLottery.value(msg.value/7)(start.add(weeklyLottery.getPeriod()).sub(now));
+        monthlyLottery.startLottery.value(msg.value/7)(start.add(monthlyLottery.getPeriod()).sub(now));
+        yearlyLottery.startLottery.value(msg.value/7)(start.add(yearlyLottery.getPeriod()).sub(now));
+        jackPot.startLottery.value(msg.value/7)(ORACLIZE_TIMEOUT);
+        superJackPot.startLottery.value(msg.value/7)(ORACLIZE_TIMEOUT);
     }
 }

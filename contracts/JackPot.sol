@@ -9,11 +9,9 @@ contract IChecker {
 }
 
 
-contract SuperJackPot is BaseLottery {
+contract JackPot is BaseLottery {
 
     IChecker public checker;
-    uint constant public SUPERJACKPOT_ORGANISER_SHARE = 20;          // 20% to organiser
-    uint constant public SUPERJACKPOT_WINNER_SHARE = 80;             // 80% to winner
 
     modifier onlyChecker {
         require(msg.sender == address(checker), "");
@@ -95,45 +93,5 @@ contract SuperJackPot is BaseLottery {
         addParticipant(_participant, ticketsCount);
 
         updateRoundFundsAndParticipants(_participant, msg.value);
-    }
-
-    function getGain(uint _fromRound, uint _toRound) public {
-        transferGain(msg.sender, _fromRound, _toRound);
-    }
-
-    function sendGain(address payable _participant, uint _fromRound, uint _toRound) public onlyManager {
-        transferGain(_participant, _fromRound, _toRound);
-    }
-
-    function transferGain(address payable _participant, uint _fromRound, uint _toRound) internal {
-        require(_fromRound <= _toRound, "");
-        require(_participant != address(0), "");
-
-        if (KYCWhitelist.isWhitelisted(_participant)) {
-            uint funds;
-
-            for (uint i = _fromRound; i <= _toRound; i++) {
-
-                if (rounds[i].state == RoundState.SUCCESS
-                    && rounds[i].sendGain[_participant] == false) {
-
-                    rounds[i].sendGain[_participant] = true;
-                    funds = funds.add(getWinningFunds(i, _participant));
-                }
-            }
-
-            require(funds > 0, "");
-
-            uint fundsToOrganiser = funds.mul(SUPERJACKPOT_ORGANISER_SHARE).div(100);
-            uint fundsToWinner = funds.mul(SUPERJACKPOT_WINNER_SHARE).div(100);
-
-            _participant.transfer(fundsToWinner);
-            organiser.transfer(fundsToOrganiser);
-
-            emit Withdraw(_participant, fundsToWinner, _fromRound, _toRound);
-            emit Withdraw(organiser, fundsToOrganiser, _fromRound, _toRound);
-        } else {
-            emit AddressIsNotAddedInKYC(_participant);
-        }
     }
 }

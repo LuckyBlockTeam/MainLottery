@@ -11,6 +11,7 @@ contract TestMainLottery is MainLottery {
         address _weeklyLottery,
         address _monthlyLottery,
         address _yearlyLottery,
+        address _jackPot,
         address _superJackPot
     )
         public
@@ -21,6 +22,7 @@ contract TestMainLottery is MainLottery {
             _weeklyLottery,
             _monthlyLottery,
             _yearlyLottery,
+            _jackPot,
             _superJackPot
         )
     { }

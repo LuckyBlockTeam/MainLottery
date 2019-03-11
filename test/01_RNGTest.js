@@ -103,4 +103,14 @@ contract('RNG tests', async (accounts) => {
         }
         assert.ok(err instanceof Error);
     });
+
+    it('callback from not randao', async () => {
+        let err;
+        try {
+            await RNG.__callback('0x0', 0);
+        } catch (error) {
+            err = error;
+        }
+        assert.ok(err instanceof Error);
+    });
 });

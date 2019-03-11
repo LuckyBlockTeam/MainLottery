@@ -5,6 +5,7 @@ const DailyLotteryContract = artifacts.require("./DailyLottery.sol");
 const WeeklyLotteryContract = artifacts.require("./WeeklyLottery.sol");
 const MonthlyLotteryContract = artifacts.require("./MonthlyLottery.sol");
 const YearlyLotteryContract = artifacts.require("./YearlyLottery.sol");
+const JackPotContract = artifacts.require("./JackPot.sol");
 const SuperJackPotContract = artifacts.require("./SuperJackPot.sol");
 const JackPotCheckerContract = artifacts.require("./JackPotChecker.sol");
 const KYCWhitelistContract = artifacts.require("./KYCWhitelist.sol");
@@ -15,6 +16,7 @@ const TestDailyLotteryContract = artifacts.require("./TestDailyLottery.sol");
 const TestWeeklyLotteryContract = artifacts.require("./TestWeeklyLottery.sol");
 const TestMonthlyLotteryContract = artifacts.require("./TestMonthlyLottery.sol");
 const TestYearlyLotteryContract = artifacts.require("./TestYearlyLottery.sol");
+const TestJackPotContract = artifacts.require("./TestJackPot.sol");
 const TestSuperJackPotContract = artifacts.require("./TestSuperJackPot.sol");
 const RandaoContract = artifacts.require("./Randao.sol");
 const AuxContractContract= artifacts.require("./AuxContract.sol");
@@ -27,6 +29,7 @@ module.exports = async function(deployer, network, accounts) {
     let MonthlyPeriod = 240;
     let YearlyPeriod = 300;
     let JackPotPeriod = 61;
+    let SuperJackPotPeriod = 61;
 
     if ( true ||
         network == 'develop'
@@ -62,15 +65,20 @@ module.exports = async function(deployer, network, accounts) {
 
             await deployer.deploy(JackPotCheckerContract);
 
+            await deployer.link(RNGContract, TestJackPotContract);
+            await deployer.link(KYCWhitelistContract, TestJackPotContract);
+            await deployer.deploy(TestJackPotContract, RNGContract.address, JackPotPeriod, JackPotCheckerContract.address);
+
             await deployer.link(RNGContract, TestSuperJackPotContract);
             await deployer.link(KYCWhitelistContract, TestSuperJackPotContract);
-            await deployer.deploy(TestSuperJackPotContract, RNGContract.address, JackPotPeriod, JackPotCheckerContract.address);
+            await deployer.deploy(TestSuperJackPotContract, RNGContract.address, SuperJackPotPeriod, JackPotCheckerContract.address);
 
             await deployer.link(RNGContract, TestMainLotteryContract);
             await deployer.link(TestDailyLotteryContract, TestMainLotteryContract);
             await deployer.link(TestWeeklyLotteryContract, TestMainLotteryContract);
             await deployer.link(TestMonthlyLotteryContract, TestMainLotteryContract);
             await deployer.link(TestYearlyLotteryContract, TestMainLotteryContract);
+            await deployer.link(TestJackPotContract, TestMainLotteryContract);
             await deployer.link(TestSuperJackPotContract, TestMainLotteryContract);
             await deployer.link(KYCWhitelistContract, TestMainLotteryContract);
             await deployer.deploy(
@@ -81,6 +89,7 @@ module.exports = async function(deployer, network, accounts) {
                 TestWeeklyLotteryContract.address,
                 TestMonthlyLotteryContract.address,
                 TestYearlyLotteryContract.address,
+                TestJackPotContract.address,
                 TestSuperJackPotContract.address
             );
 
@@ -89,6 +98,7 @@ module.exports = async function(deployer, network, accounts) {
             await deployer.link(TestWeeklyLotteryContract, ManagementContract);
             await deployer.link(TestMonthlyLotteryContract, ManagementContract);
             await deployer.link(TestYearlyLotteryContract, ManagementContract);
+            await deployer.link(TestJackPotContract, ManagementContract);
             await deployer.link(TestSuperJackPotContract, ManagementContract);
             await deployer.deploy(
                 ManagementContract,
@@ -97,6 +107,7 @@ module.exports = async function(deployer, network, accounts) {
                 TestWeeklyLotteryContract.address,
                 TestMonthlyLotteryContract.address,
                 TestYearlyLotteryContract.address,
+                TestJackPotContract.address,
                 TestSuperJackPotContract.address
             );
 

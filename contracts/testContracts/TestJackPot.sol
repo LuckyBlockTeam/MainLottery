@@ -1,8 +1,8 @@
 pragma solidity 0.5.2;
 
-import "../SuperJackPot.sol";
+import "../JackPot.sol";
 
-contract TestSuperJackPot is SuperJackPot {
+contract TestJackPot is JackPot {
 
     constructor(
         address payable _rng,
@@ -10,7 +10,7 @@ contract TestSuperJackPot is SuperJackPot {
         address _checker
     )
         public
-        SuperJackPot(_rng, _period, _checker)
+        JackPot(_rng, _period, _checker)
     {
 
     }

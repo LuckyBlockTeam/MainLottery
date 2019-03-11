@@ -551,6 +551,7 @@ contract('Functional tests', async (accounts) => {
 
         await KYCWhitelist.addParticipant(accounts[1], {from: accounts[3]});
         await KYCWhitelist.addParticipant(accounts[2], {from: accounts[3]});
+        await KYCWhitelist.addParticipant(accounts[5], {from: accounts[3]});
     });
 
     it('removeWinner function', async function() {
@@ -570,6 +571,9 @@ contract('Functional tests', async (accounts) => {
             err = error;
         }
         assert.ok(err instanceof Error);
+
+
+        await KYCWhitelist.removeParticipant(accounts[5], {from: accounts[3]});
 
     });
 

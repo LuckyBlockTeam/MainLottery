@@ -13,6 +13,7 @@ interface iMainLottery {
         uint _weeklyTicketsCount,
         uint _monthlyTicketsCount,
         uint _yearlyTicketsCount,
+        uint _jackPotTicketsCount,
         uint _superJackPotTicketsCount
     ) external payable;
 }
@@ -42,6 +43,7 @@ contract ProxyBonusContract is Manageable {
     address weeklyLottery;
     address monthlyLottery;
     address yearlyLottery;
+    address jackPot;
     address superJackPot;
 
     mapping(address => uint) lotteryLimits;
@@ -58,6 +60,7 @@ contract ProxyBonusContract is Manageable {
         address _weeklyLottery,
         address _monthlyLottery,
         address _yearlyLottery,
+        address _jackPot,
         address _superJackPot
     )
     public
@@ -70,6 +73,7 @@ contract ProxyBonusContract is Manageable {
         require(_weeklyLottery != address(0), "");
         require(_monthlyLottery != address(0), "");
         require(_yearlyLottery != address(0), "");
+        require(_jackPot != address(0), "");
         require(_superJackPot != address(0), "");
 
         token = IERC20(_token);
@@ -79,6 +83,7 @@ contract ProxyBonusContract is Manageable {
         weeklyLottery = _weeklyLottery;
         monthlyLottery = _monthlyLottery;
         yearlyLottery = _yearlyLottery;
+        jackPot = _jackPot;
         superJackPot = _superJackPot;
     }
 
@@ -92,7 +97,8 @@ contract ProxyBonusContract is Manageable {
         uint weeklyTicketsAmount = calcAmount(weeklyLottery, _luckyBacksAmount);
         uint monthlyTicketsAmount = calcAmount(monthlyLottery, _luckyBacksAmount);
         uint yearlyTicketsAmount = calcAmount(yearlyLottery, _luckyBacksAmount);
-        uint jackPotTicketsAmount = calcAmount(superJackPot, _luckyBacksAmount);
+        uint jackPotTicketsAmount = calcAmount(jackPot, _luckyBacksAmount);
+        uint superJackPotTicketsAmount = calcAmount(superJackPot, _luckyBacksAmount);
 
         iMainLottery(mainLottery).buyBonusTickets(
             _participant,
@@ -101,7 +107,8 @@ contract ProxyBonusContract is Manageable {
             weeklyTicketsAmount,
             monthlyTicketsAmount,
             yearlyTicketsAmount,
-            jackPotTicketsAmount
+            jackPotTicketsAmount,
+            superJackPotTicketsAmount
         );
     }
 
@@ -139,6 +146,7 @@ contract ProxyBonusContract is Manageable {
         uint _weeklyRoundLimit,
         uint _monthlyRoundLimit,
         uint _yearlyRoundLimit,
+        uint _jackPotRoundLimit,
         uint _superJackPotRoundLimit
     )
     public
@@ -149,6 +157,7 @@ contract ProxyBonusContract is Manageable {
         changeRoundLimit(weeklyLottery, _weeklyRoundLimit);
         changeRoundLimit(monthlyLottery, _monthlyRoundLimit);
         changeRoundLimit(yearlyLottery, _yearlyRoundLimit);
+        changeRoundLimit(jackPot, _jackPotRoundLimit);
         changeRoundLimit(superJackPot, _superJackPotRoundLimit);
     }
 
